@@ -11,6 +11,7 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
+#include "GameInstance/A_GameInstance.h"
 
 void UW_MainMenu::NativeConstruct()
 {
@@ -20,9 +21,16 @@ void UW_MainMenu::NativeConstruct()
     ChangingName->OnTextCommitted.AddDynamic(this, &UW_MainMenu::OnChangingNameTextCommitted);
     InputNoOfPlayer->OnTextCommitted.AddDynamic(this,&UW_MainMenu::UpdateNoOfPlayers);
     SessionButton->OnClicked.AddDynamic(this, &UW_MainMenu::CreateSession);
+    SessionJoinButton->OnClicked.AddDynamic(this, &UW_MainMenu::JoinSession);
+    ChangeIpAddress->OnTextCommitted.AddDynamic(this, &UW_MainMenu::OnIPAddressChange);
 }
 
 
+
+void UW_MainMenu::JoinSession()
+{
+    UGameplayStatics::OpenLevel(this, *IP_Address);
+}
 
 
 /// Editable Text changed
@@ -31,43 +39,25 @@ void UW_MainMenu::OnChangingNameTextCommitted(const FText& Text, ETextCommit::Ty
     UpdateName(Text);
 }
 
-
-
-void UW_MainMenu::CreateSession()
-{
-    IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
-    if (OnlineSub) {
-        IOnlineSessionPtr SessionInterface = OnlineSub->GetSessionInterface();
-        if (SessionInterface.IsValid()) {
-            FOnlineSessionSettings SessionSettings;
-
-            SessionInterface->DestroySession("MySessionName");
-
-            SessionSettings.NumPublicConnections = NoOfPlayer; 
-            SessionSettings.bIsLANMatch = true; 
-            SessionSettings.bShouldAdvertise = true; 
-            SessionSettings.bUsesPresence = true;
-            SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UW_MainMenu::OnCreateSessionComplete);
-            SessionInterface->CreateSession(0, TEXT("MySessionName"), SessionSettings);
-        }
+void UW_MainMenu::CreateSession() {
+    UWorld* World = GetWorld();
+    if (World) {
+        World->ServerTravel("/Game/Maps/M_WaitLobby?listen");
     }
 }
 
-void UW_MainMenu::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
-{
-    if (bWasSuccessful){
-        UWorld* world = GetWorld();
-        world->ServerTravel("/Game/Maps/M_WaitLobby?listen");
-    }
-    else{
-        UE_LOG(LogTemp, Warning, TEXT("Not Connected"));
-    }
-}
 
+void UW_MainMenu::OnIPAddressChange(const FText& Text, ETextCommit::Type CommitMethod)
+{
+    IP_Address = Text.ToString();
+    IpAddressText->SetText(Text);
+}
 
 /// Editable Text Changed NoOfPlayer
 void UW_MainMenu::UpdateNoOfPlayers(const FText& NewText , ETextCommit::Type CommitMethod)
 {
+    UA_GameInstance* GameInstance = Cast<UA_GameInstance>(GetGameInstance());
+    
     if (NewText.ToString().IsNumeric()){
         NoOfPlayer = FCString::Atoi(*NewText.ToString());
         if (NoOfPlayer <= 0) {
@@ -77,6 +67,7 @@ void UW_MainMenu::UpdateNoOfPlayers(const FText& NewText , ETextCommit::Type Com
     else{
         NoOfPlayer = 5;
     }
+    if (GameInstance) GameInstance->NoOfPlayer = NoOfPlayer;
 }
 
 
@@ -109,3 +100,36 @@ FString UW_MainMenu::GetComputerNameFunc()
     
 }
 
+/*
+
+void UW_MainMenu::CreateSession()
+{
+    IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+    if (OnlineSub) {
+        IOnlineSessionPtr SessionInterface = OnlineSub->GetSessionInterface();
+        if (SessionInterface.IsValid()) {
+            FOnlineSessionSettings SessionSettings;
+
+            SessionInterface->DestroySession("MySessionName");
+
+            SessionSettings.NumPublicConnections = NoOfPlayer;
+            SessionSettings.bIsLANMatch = false;
+            SessionSettings.bShouldAdvertise = true;
+            SessionSettings.bUsesPresence = true;
+            SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UW_MainMenu::OnCreateSessionComplete);
+            SessionInterface->CreateSession(0, TEXT("MySessionName"), SessionSettings);
+        }
+    }
+}
+
+void UW_MainMenu::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
+{
+    if (bWasSuccessful){
+        UWorld* world = GetWorld();
+        world->ServerTravel("/Game/Maps/M_WaitLobby?listen");
+    }
+    else{
+        UE_LOG(LogTemp, Warning, TEXT("Not Connected"));
+    }
+}
+*/

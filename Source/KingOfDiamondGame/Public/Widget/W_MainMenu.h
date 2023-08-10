@@ -17,7 +17,11 @@ class KINGOFDIAMONDGAME_API UW_MainMenu : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	
 
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UButton* SessionJoinButton;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	class UButton* SessionButton; 
@@ -29,6 +33,20 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	class UEditableText* ChangingName;
+
+	////// ip address
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	class UEditableText* ChangeIpAddress;
+
+	FString IP_Address;
+
+	UFUNCTION()
+	void OnIPAddressChange(const FText& Text, ETextCommit::Type CommitMethod);
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* IpAddressText;
+
+	////////
 
 	UPROPERTY(BlueprintReadWrite)
 	FString PlayerName;
@@ -55,6 +73,9 @@ public:
 	void CreateSession();
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 
-	
+	UFUNCTION()
+	void JoinSession();
+
+	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 
 };
