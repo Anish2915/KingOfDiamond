@@ -10,6 +10,8 @@
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Misc/W_Points.h"
+#include "GameFramework/PlayerState.h"
 
 void AArenaHUD::BeginPlay()
 {
@@ -50,5 +52,17 @@ void AArenaHUD::AddButtons()
 			W_ArenaRef->MyHorizontalBox->AddChild(Hor);
 			
 		}
+	}
+}
+
+void AArenaHUD::AddPointsView(const FText& NameVar)
+{
+
+	if (W_ArenaRef && SelectPoints && PC_Arena && W_ArenaRef) {
+		UW_Points* PointsRef = CreateWidget<UW_Points>(PC_Arena, SelectPoints);
+		PointsRef->NameText->SetText(NameVar);
+		PointsRef->PoitsText->SetText(FText::FromString("0"));
+		W_ArenaRef->PointsBox->AddChild(PointsRef);
+		PointsArray.Add(PointsRef);
 	}
 }

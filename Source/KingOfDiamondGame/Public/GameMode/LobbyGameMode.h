@@ -18,5 +18,5 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
 
-	int NoOfPlayer = 5;
+	int NoOfPlayer = 3;
 };

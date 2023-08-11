@@ -9,6 +9,7 @@
 class UW_Arena;
 class UW_HorizontalCPP;
 class UW_ButtonCPP;
+class UW_Points;
 UCLASS()
 class KINGOFDIAMONDGAME_API AArenaHUD : public AHUD
 {
@@ -29,7 +30,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UW_ButtonCPP> SelectButton;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UW_Points> SelectPoints;
+	TArray<UW_Points*> PointsArray;
+
 	class APC_Arena* PC_Arena;
 
 	void AddButtons();
+	void AddPointsView(const FText& NameVar);
 };

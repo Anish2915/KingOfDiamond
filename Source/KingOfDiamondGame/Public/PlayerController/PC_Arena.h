@@ -21,7 +21,7 @@ public:
 
 	class AArenaHUD* ArenaHUD;
 	/////////////////////////////////////
-	UFUNCTION(BlueprintCallable)
+	
 	void ChoooseNum(int n);
 	
 	UPROPERTY(ReplicatedUsing = OnRepChooseNum, BlueprintReadWrite);
@@ -37,13 +37,39 @@ public:
 	
 
 	//////////////////////////////////////////
-	UPROPERTY(Replicated, BlueprintReadWrite);
+	UPROPERTY(Replicated);
 	bool bDoesChoose=false;
 
-	void StartHudTime();
-	void StopTimer();
-	void UpdateTimer();
-	void SetArenaTime(int countdown);
-    int ChoosingTime = 90;
-	FTimerHandle TimerHandle_UpdateTimer;
+	UPROPERTY(Replicated);
+	bool bIsAlive = true;
+
+	UPROPERTY(Replicated);
+	int points = 0;
+
+
+	//////////////////////////
+	 
+
+	///////////////////////////////////////
+	void SetArenaTimePC(int countdown);
+
+
+	UFUNCTION(Client, Reliable)
+	void Client_UpdateArenaTimer(const FText& TimerText);
+
+
+	UFUNCTION(Client, Reliable)
+    void Client_UpdateNames(const FText& NameVar);
+
+	void UpdateNames(const FText& NameVar);
+	void UpdatePointAtLocation(int i,int value);
+
+
+	UFUNCTION(Client, Reliable)
+	void Client_UpdatePointAtLocation(int i,int value);
+
+
+	UFUNCTION(Client, Reliable)
+	void Client_UpdateLooseOrWin(bool b1);
+	void UpdateLooseOrWin(bool b1);
 };

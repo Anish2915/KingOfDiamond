@@ -20,8 +20,13 @@ void UW_ButtonCPP::OnClick()
 	if (OwningPlayerController) {
 		APC_Arena* PlayerController = Cast<APC_Arena>(OwningPlayerController);
 		if (PlayerController) {
-			UE_LOG(LogTemp, Warning, TEXT("playerCOntrollerFound"));
-			PlayerController->ChoooseNum(this->value);
+			
+			if (PlayerController->bIsAlive && !PlayerController->bDoesChoose) {
+				PlayerController->ChoooseNum(this->value);
+			}
+			else {
+				UE_LOG(LogTemp, Warning, TEXT("You are dead"));
+			}
 		}
 	}
 }

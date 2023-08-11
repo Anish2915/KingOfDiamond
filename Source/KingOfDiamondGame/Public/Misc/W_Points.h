@@ -4,29 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "W_ButtonCPP.generated.h"
+#include "W_Points.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class KINGOFDIAMONDGAME_API UW_ButtonCPP : public UUserWidget
+class KINGOFDIAMONDGAME_API UW_Points : public UUserWidget
 {
 	GENERATED_BODY()
-	
 public:
-
-	virtual void NativeConstruct() override;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* PoitsText;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Button;
-
-	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* Text;
-	int value;
-
-	UFUNCTION()
-	void OnClick();
-
-
+	class UTextBlock* NameText;
 };

@@ -21,7 +21,12 @@ public:
     UPROPERTY(meta = (BindWidget))
     class UTextBlock* ArenaTimer;
 
+    UPROPERTY(meta = (BindWidget))
+    class UHorizontalBox* PointsBox;
 
     UPROPERTY(meta = (BindWidget))
     class UHorizontalBox* MyHorizontalBox;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* WinOrLoose;
 };
