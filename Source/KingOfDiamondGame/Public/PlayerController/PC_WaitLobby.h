@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "PC_MainMenu.generated.h"
+#include "PC_WaitLobby.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class KINGOFDIAMONDGAME_API APC_MainMenu : public APlayerController
+class KINGOFDIAMONDGAME_API APC_WaitLobby : public APlayerController
 {
 	GENERATED_BODY()
-protected:
+public:
 	virtual void BeginPlay() override;
-
+	class AHUD_WaitLobby* waitLobby;
 };

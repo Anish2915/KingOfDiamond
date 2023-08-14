@@ -5,29 +5,28 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 #include "GameInstance/A_GameInstance.h"
+#include "PlayerController/PC_WaitLobby.h"
+#include "HUD/HUD_WaitLobby.h"
+#include "Widget/W_WaitLobby.h"
+#include "Components/TextBlock.h"
 
 void ALobbyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	UA_GameInstance* GameInstance = Cast<UA_GameInstance>(GetGameInstance());
-	if (GameInstance) {
-		NoOfPlayer = GameInstance->NoOfPlayer;
-	}
+	bUseSeamlessTravel = true;
 }
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
+	PlayerCont = Cast<APC_WaitLobby>(NewPlayer);
+
+	GetWorldTimerManager().SetTimer(Timer, this, &ALobbyGameMode::PostLog, 5.0f, false);
+
+	
+
 	if (GameState) {
 		int32 NoOfPlayers = GameState.Get()->PlayerArray.Num();
-
-		if (NoOfPlayers == NoOfPlayer) {
-			UWorld* World = GetWorld();
-			if (World) {
-				bUseSeamlessTravel = true;
-				World->ServerTravel("/Game/Maps/M_ArenaMap?listen");
-			}
-		}
 
 		if (GEngine) {
 			GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, FString::Printf(TEXT("No Of players are %d"), NoOfPlayers));
@@ -57,6 +56,33 @@ void ALobbyGameMode::Logout(AController* Exiting)
 		FString PlayerName = PlayerState->GetPlayerName();
 		if (GEngine) {
 			GEngine->AddOnScreenDebugMessage(2, 5.0f, FColor::Red, FString::Printf(TEXT("%s has Left"), *PlayerName));
+		}
+	}
+}
+
+void ALobbyGameMode::start()
+{
+	UWorld* World = GetWorld();
+	if (World) {
+		UE_LOG(LogTemp, Warning, TEXT("World Find in gamemode"));
+		bUseSeamlessTravel = true;
+		World->ServerTravel("/Game/Maps/M_ArenaMap?listen");
+	}
+}
+
+void ALobbyGameMode::PostLog()
+{
+	if (b) {
+		Server = PlayerCont;
+
+		if (Server->waitLobby) {
+			Server->waitLobby->AddPlayer(FText::FromString(Server->PlayerState->GetPlayerName()));
+			b = false;
+		}
+	}
+	else {
+		if (Server && Server->waitLobby) {
+			Server->waitLobby->AddPlayer(FText::FromString(PlayerCont->PlayerState->GetPlayerName()));
 		}
 	}
 }

@@ -22,6 +22,7 @@ void APC_Arena::BeginPlay()
 {
 	Super::BeginPlay();
 	ArenaHUD = Cast<AArenaHUD>(GetHUD());
+	bShowMouseCursor = true;
 }
 
 void APC_Arena::ChoooseNum(int n)

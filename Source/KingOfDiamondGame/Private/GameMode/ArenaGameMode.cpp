@@ -17,15 +17,21 @@ void AArenaGameMode::CheckAverage()
 	float total = 0;
 	float NoOfPlayerInGame = 0;
 	std::vector<float> ChooosenArray;
-	for (auto& it : ControllerArray) {
-		if (it->bIsAlive){
-			if (!it->bDoesChoose) {
+	
+	for(int i = 0 ; i < NoOfPlayers ; i ++){
+		if (!ControllerArray[i] && AliveStatus[i]) {
+			AliveStatus[i] = false;
+			NoOfPeopleAlive--;
+		}
+
+		if (ControllerArray[i] && ControllerArray[i]->bIsAlive){
+			if (!ControllerArray[i]->bDoesChoose) {
 				SomeoneNotChoose();
 				StopRound();
 				return;
 			}
-			ChooosenArray.push_back(it->ChoosenNumber);
-			total += it->ChoosenNumber;
+			ChooosenArray.push_back(ControllerArray[i]->ChoosenNumber);
+			total += ControllerArray[i]->ChoosenNumber;
 			NoOfPlayerInGame++;
 		}
 		else {
@@ -74,7 +80,9 @@ void AArenaGameMode::CheckAverage()
 	float mini = std::abs(ChooosenArray[0] - average);
 	for (int i = 0; i < NoOfPlayers; i++) {
 		if (ControllerArray[i]->bIsAlive) {
-			ChooosenArray[i] = std::abs(ChooosenArray[i] - average);
+			ChooosenArray[i] = std::abs(ChooosenArray[i] - average)
+				
+				;
 			if (ChooosenArray[i] < mini) {
 				mini = ChooosenArray[i];
 			}
@@ -102,10 +110,11 @@ void AArenaGameMode::GetInformation()
 	NoOfPlayers = GameState.Get()->PlayerArray.Num();
 	UE_LOG(LogTemp, Warning, TEXT("%f"), NoOfPlayers);
 	NoOfPeopleAlive = NoOfPlayers;
-	for (auto it : PlayerState) {
+	for (auto& it : PlayerState) {
 		APC_Arena* PlayerCont = Cast<APC_Arena>(it->GetOwner());
 		if (PlayerCont) {
 			ControllerArray.Add(PlayerCont);
+			AliveStatus.Add(true);
 		}
 	}
 	for (int i = 0; i < NoOfPlayers; i++) {

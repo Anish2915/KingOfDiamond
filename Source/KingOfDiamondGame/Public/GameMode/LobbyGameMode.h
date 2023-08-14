@@ -18,5 +18,13 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
 
-	int NoOfPlayer = 3;
+	class APC_WaitLobby* Server;
+	bool b=true;
+
+	void start();
+
+	FTimerHandle Timer;
+	APC_WaitLobby* PlayerCont;
+
+	void PostLog();
 };

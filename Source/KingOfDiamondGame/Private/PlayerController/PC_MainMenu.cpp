@@ -3,3 +3,8 @@
 
 #include "PlayerController/PC_MainMenu.h"
 
+void APC_MainMenu::BeginPlay()
+{
+	Super::BeginPlay();
+	bShowMouseCursor = true;
+}

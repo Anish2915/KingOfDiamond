@@ -27,6 +27,7 @@ public:
 
 	TArray<class APlayerState*> PlayerState;
 	TArray<class APC_Arena*> ControllerArray;
+	TArray<bool> AliveStatus;
 	float NoOfPlayers;
 
 	bool Rule1Check(std::vector<float>& TempArray);
