@@ -27,7 +27,7 @@ void AHUD_WaitLobby::AddPlayer(const FText& NameText)
 {
 	if (W_LobbyRef && PC_WaitLobbyRef) {
 		UW_Lobby_Vertical* verticalRef = CreateWidget<UW_Lobby_Vertical>(PC_WaitLobbyRef, SelectedLobbyWidVertical);
-		verticalRef->SNo->SetText(FText::FromString(FString::Printf(TEXT("%d"),sNO)));
+		verticalRef->SNo->SetText(FText::FromString(FString::Printf(TEXT("%d)-"),sNO)));
 		verticalRef->Name->SetText(NameText);
 		W_LobbyRef->VerticalPlayerBox->AddChild(verticalRef);
 		sNO++;

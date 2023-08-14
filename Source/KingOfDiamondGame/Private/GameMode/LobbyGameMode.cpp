@@ -21,10 +21,10 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	PlayerCont = Cast<APC_WaitLobby>(NewPlayer);
 
-	GetWorldTimerManager().SetTimer(Timer, this, &ALobbyGameMode::PostLog, 5.0f, false);
+	GetWorldTimerManager().SetTimer(Timer, this, &ALobbyGameMode::PostLog, 3.0f, false);
 
 	
-
+	/*
 	if (GameState) {
 		int32 NoOfPlayers = GameState.Get()->PlayerArray.Num();
 
@@ -39,13 +39,14 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 			}
 		}
 	}
+	*/
 }
 
 void ALobbyGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 	APlayerState* PlayerState = Exiting->GetPlayerState<APlayerState>();
-
+	/*
 	if (PlayerState) {
 		int32 NoOfPlayers = GameState.Get()->PlayerArray.Num();
 		if (GEngine) {
@@ -58,13 +59,13 @@ void ALobbyGameMode::Logout(AController* Exiting)
 			GEngine->AddOnScreenDebugMessage(2, 5.0f, FColor::Red, FString::Printf(TEXT("%s has Left"), *PlayerName));
 		}
 	}
+	*/
 }
 
 void ALobbyGameMode::start()
 {
 	UWorld* World = GetWorld();
 	if (World) {
-		UE_LOG(LogTemp, Warning, TEXT("World Find in gamemode"));
 		bUseSeamlessTravel = true;
 		World->ServerTravel("/Game/Maps/M_ArenaMap?listen");
 	}

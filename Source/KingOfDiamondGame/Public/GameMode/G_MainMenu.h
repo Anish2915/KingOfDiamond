@@ -13,5 +13,6 @@ UCLASS()
 class KINGOFDIAMONDGAME_API AG_MainMenu : public AGameMode
 {
 	GENERATED_BODY()
+public:
 	
 };

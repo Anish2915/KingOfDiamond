@@ -15,6 +15,7 @@ void UW_WaitLobby::NativeConstruct()
 		PlayerController = Cast<APC_WaitLobby>(OwningPlayerController);
 		if (PlayerController->HasAuthority()) {
 			StartGameButton->SetVisibility(ESlateVisibility::Visible);
+			IP_Address_lobby->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 	
@@ -23,10 +24,8 @@ void UW_WaitLobby::NativeConstruct()
 void UW_WaitLobby::startButtonFunc()
 {
 	if (PlayerController && PlayerController->HasAuthority()) {
-		UE_LOG(LogTemp, Warning, TEXT("button pressed"));
 		UWorld* World = GetWorld();
 		if (World) {
-			UE_LOG(LogTemp, Warning, TEXT("World Find"));
 			World->ServerTravel("/Game/Maps/M_ArenaMap?listen");
 		}
 	}

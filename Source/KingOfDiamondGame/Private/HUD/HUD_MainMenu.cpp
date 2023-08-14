@@ -4,6 +4,8 @@
 #include "HUD/HUD_MainMenu.h"
 #include "Widget/W_MainMenu.h"
 #include "PlayerController/PC_MainMenu.h"
+#include "GameFramework/PlayerState.h"
+#include "Components/TextBlock.h"
 
 void AHUD_MainMenu::BeginPlay()
 {
@@ -17,5 +19,9 @@ void AHUD_MainMenu::AddWidgetToScreen()
 	if (PC_MainMenu && SelectedWid) {
 		W_MainMenuRef = CreateWidget<UW_MainMenu>(PC_MainMenu,SelectedWid);
 		W_MainMenuRef->AddToViewport();
+		APlayerState* PlayerState = PC_MainMenu->GetPlayerState<APlayerState>();
+
+		if(W_MainMenuRef->NameBlock)
+		W_MainMenuRef->NameBlock->SetText(FText::FromString(FString::Printf(TEXT("WELCOME %s"), *PlayerState->GetPlayerName())));
 	}
 }
