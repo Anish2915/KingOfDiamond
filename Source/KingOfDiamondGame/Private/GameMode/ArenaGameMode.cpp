@@ -56,7 +56,8 @@ void AArenaGameMode::GetInformation()
 }
 
 
-void AArenaGameMode::StartingTimeFunc() 
+
+void AArenaGameMode::StartingTimeFunc()
 {
 	GetWorldTimerManager().ClearTimer(StartingTimer);
 	StartRound();
@@ -267,24 +268,30 @@ void AArenaGameMode::StopRound(int n, TArray<float> ChooosenArr,float aver)
 		it->ShowCalcAverWidget(n,ChooosenArr,PointsArray,aver,WinnerStatus,tempDead,DoesSOmeOneDied,RuleToAdd);
 	}
 
-
-	if (NoOfPeopleAlive <= 1) {
-		UE_LOG(LogTemp, Warning, TEXT("GameFinish"));
-		for (int i = 0; i < NoOfPlayers; i++) {
-			if (ControllerArray[i]->bIsAlive) {
-				ControllerArray[i]->UpdateLooseOrWin(true);
-			}
-		}
-		return;
-	}
-	
 	float tempTime = 18.0f;
 	if (n == 1) {
 		tempTime = 23.0f;
 	}
 	if (DoesSOmeOneDied) tempTime = tempTime + 4.0f;
+
+
+	if (NoOfPeopleAlive <= 1) {
+		GetWorldTimerManager().SetTimer(FinalTime, this, &AArenaGameMode::GameFinsih, tempTime, false);
+		return;
+	}
+
 	GetWorldTimerManager().SetTimer(NewTime, this, &AArenaGameMode::ShowAverageBP, tempTime, false);
 	
+}
+
+
+void AArenaGameMode::GameFinsih()
+{
+	for (int i = 0; i < NoOfPlayers; i++) {
+		if (ControllerArray[i]->bIsAlive) {
+			ControllerArray[i]->UpdateLooseOrWin(true);
+		}
+	}
 }
 
 void AArenaGameMode::StartTimer()
