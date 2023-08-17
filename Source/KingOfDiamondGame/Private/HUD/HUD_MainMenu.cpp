@@ -21,7 +21,7 @@ void AHUD_MainMenu::AddWidgetToScreen()
 		W_MainMenuRef->AddToViewport();
 		APlayerState* PlayerState = PC_MainMenu->GetPlayerState<APlayerState>();
 
-		if(W_MainMenuRef->NameBlock)
+		if(W_MainMenuRef->NameBlock && PlayerState)
 		W_MainMenuRef->NameBlock->SetText(FText::FromString(FString::Printf(TEXT("WELCOME %s"), *PlayerState->GetPlayerName())));
 	}
 }

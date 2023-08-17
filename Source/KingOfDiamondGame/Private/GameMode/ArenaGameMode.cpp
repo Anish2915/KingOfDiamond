@@ -10,45 +10,118 @@
 void AArenaGameMode::BeginPlay()
 {
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AArenaGameMode::GetInformation, 10.0f, false);
+	
 }
+
+void AArenaGameMode::GetInformation()
+{
+	PlayerState = GameState.Get()->PlayerArray;
+	NoOfPlayers = GameState.Get()->PlayerArray.Num();
+	NoOfPeopleAlive = NoOfPlayers;
+	for (auto& it : PlayerState) {
+		APC_Arena* PlayerCont = Cast<APC_Arena>(it->GetOwner());
+		if (PlayerCont) {
+			ControllerArray.Add(PlayerCont);
+			PlayerCont->CreateStartingRuleWidget();
+			PlayerCont->SetVisibilityOfMain();
+			PointsArray.Add(0);
+		}
+	}
+	for (int i = 0; i < NoOfPlayers; i++) {
+		for (int j = 0; j < NoOfPlayers; j++) {
+			ControllerArray[i]->UpdateNames(FText::FromString(ControllerArray[j]->PlayerState->GetPlayerName()));
+		}
+	}
+	bool DoesRuleChange = false;
+	if (!Rule3 && NoOfPeopleAlive <= 2) {
+		Rule3 = true;
+		DoesRuleChange = true;
+	}
+	if (!Rule1 && NoOfPeopleAlive <= 4) {
+		Rule1 = true;
+		DoesRuleChange = true;
+	}
+	if (!Rule2 && NoOfPeopleAlive <= 3) {
+		Rule2 = true;
+		DoesRuleChange = true;
+	}
+	GetWorldTimerManager().ClearTimer(TimerHandle);
+
+	if (DoesRuleChange) {
+
+	}
+
+	GetWorldTimerManager().SetTimer(StartingTimer, this, &AArenaGameMode::StartingTimeFunc, 47.0f, false);
+	
+}
+
+
+void AArenaGameMode::StartingTimeFunc() 
+{
+	GetWorldTimerManager().ClearTimer(StartingTimer);
+	StartRound();
+}
+
+
 
 void AArenaGameMode::CheckAverage()
 {
+	
 	float total = 0;
 	float NoOfPlayerInGame = 0;
-	std::vector<float> ChooosenArray;
-	
-	for(int i = 0 ; i < NoOfPlayers ; i ++){
-		if (!ControllerArray[i] && AliveStatus[i]) {
-			AliveStatus[i] = false;
-			NoOfPeopleAlive--;
+	TArray<float> ChooosenArray;
+	WinnerStatus.Empty();
+	for (int i = 0; i < NoOfPlayers; i++) {
+		if (ControllerArray[i]->bIsAlive) {
+			WinnerStatus.Add(true);
 		}
-
-		if (ControllerArray[i] && ControllerArray[i]->bIsAlive){
+		else {
+			WinnerStatus.Add(false);
+		}
+	}
+	for(int i = 0 ; i < NoOfPlayers ; i ++){
+		if (ControllerArray[i]->bIsAlive){
 			if (!ControllerArray[i]->bDoesChoose) {
 				SomeoneNotChoose();
-				StopRound();
+				StopRound(2, ChooosenArray,0);
 				return;
 			}
-			ChooosenArray.push_back(ControllerArray[i]->ChoosenNumber);
+			ChooosenArray.Add(ControllerArray[i]->ChoosenNumber);
 			total += ControllerArray[i]->ChoosenNumber;
 			NoOfPlayerInGame++;
 		}
 		else {
-			ChooosenArray.push_back(-1);
+			ChooosenArray.Add(-1);
 		}
+		
 	}
 	if (Rule1) {
 		if (Rule1Check(ChooosenArray)) {
-			for(int i = 0 ; i < NoOfPlayers; i ++){
+			std::unordered_map<int, int> mp;
+			std::vector<bool> loose(NoOfPlayers,false);
+			for (int i = 0; i < NoOfPlayers; i++) {
 				if (ControllerArray[i]->bIsAlive) {
+					if (mp.count(ChooosenArray[i])) {
+						loose[i] = true;
+						loose[mp[ChooosenArray[i]]] = true;
+					}
+					else {
+						mp[ChooosenArray[i]] = i;
+					}
+				}
+			}
+
+			for(int i = 0 ; i < NoOfPlayers; i ++){
+				if (ControllerArray[i]->bIsAlive && loose[i]) {
 					ControllerArray[i]->points--;
+					PointsArray[i]--;
+					WinnerStatus[i] = false;
 					for (int j = 0; j < NoOfPlayers; j++) {
 						ControllerArray[j]->UpdatePointAtLocation(i, ControllerArray[i]->points);
 					}
 				}
 			}
-			StopRound();
+			StopRound(3, ChooosenArray,0);
 			return;
 		}
 	}
@@ -61,23 +134,29 @@ void AArenaGameMode::CheckAverage()
 		}
 		if (Rule3vec[0].first == 100 && Rule3vec[1].first == 0) {
 			ControllerArray[Rule3vec[1].second]->points--;
+			PointsArray[Rule3vec[1].second]--;
+			WinnerStatus[Rule3vec[1].second] = false;
 			for (int j = 0; j < NoOfPlayers; j++) {
 				ControllerArray[j]->UpdatePointAtLocation(Rule3vec[1].second, ControllerArray[Rule3vec[1].second]->points);
 			}
-			StopRound();
+			StopRound(4, ChooosenArray,0);
 			return;
 		}
 		else if (Rule3vec[0].first == 0 && Rule3vec[1].first == 100) {
 			ControllerArray[Rule3vec[0].second]->points--;
+			PointsArray[Rule3vec[0].second]--;
+			WinnerStatus[Rule3vec[0].second] = false;
 			for (int j = 0; j < NoOfPlayers; j++) {
 				ControllerArray[j]->UpdatePointAtLocation(Rule3vec[0].second, ControllerArray[Rule3vec[0].second]->points);
 			}
-			StopRound();
+			StopRound(4, ChooosenArray,0);
 			return;
 		}
 	}
+	float aver = total / NoOfPlayerInGame;
 	float average = (total / NoOfPlayerInGame)*0.8;
 	float mini = std::abs(ChooosenArray[0] - average);
+	TArray<float> choosenArrTemp = ChooosenArray;
 	for (int i = 0; i < NoOfPlayers; i++) {
 		if (ControllerArray[i]->bIsAlive) {
 			ChooosenArray[i] = std::abs(ChooosenArray[i] - average)
@@ -92,8 +171,11 @@ void AArenaGameMode::CheckAverage()
 		if (ControllerArray[i]->bIsAlive) {
 			if (ChooosenArray[i] != mini) {
 				ControllerArray[i]->points--;
+				PointsArray[i]--;
+				WinnerStatus[i] = false;
 				if (Rule2) {
 					ControllerArray[i]->points--;
+					PointsArray[i]--;
 				}
 				for (int j = 0; j < NoOfPlayers; j++) {
 					ControllerArray[j]->UpdatePointAtLocation(i, ControllerArray[i]->points);
@@ -101,31 +183,12 @@ void AArenaGameMode::CheckAverage()
 			}
 		}
 	}
-	StopRound();
+	StopRound(1, choosenArrTemp,aver);
 }
 
-void AArenaGameMode::GetInformation()
-{
-	PlayerState = GameState.Get()->PlayerArray;
-	NoOfPlayers = GameState.Get()->PlayerArray.Num();
-	UE_LOG(LogTemp, Warning, TEXT("%f"), NoOfPlayers);
-	NoOfPeopleAlive = NoOfPlayers;
-	for (auto& it : PlayerState) {
-		APC_Arena* PlayerCont = Cast<APC_Arena>(it->GetOwner());
-		if (PlayerCont) {
-			ControllerArray.Add(PlayerCont);
-			AliveStatus.Add(true);
-		}
-	}
-	for (int i = 0; i < NoOfPlayers; i++) {
-		for (int j = 0; j < NoOfPlayers; j++) {
-			ControllerArray[i]->UpdateNames(FText::FromString(ControllerArray[j]->PlayerState->GetPlayerName()));
-		}
-	}
-	StartRound(1);
-}
 
-bool AArenaGameMode::Rule1Check(std::vector<float>& TempArray)
+
+bool AArenaGameMode::Rule1Check(TArray<float> TempArray)
 {
 	std::unordered_map<float, int> mp;
 	for (int i = 0; i < NoOfPlayers; i++) {
@@ -145,6 +208,8 @@ void AArenaGameMode::SomeoneNotChoose()
 	for(int i=0;i<NoOfPlayers;i++){
 		if (ControllerArray[i]->bIsAlive && !ControllerArray[i]->bDoesChoose) {
 			ControllerArray[i]->points--;
+			PointsArray[i]--;
+			WinnerStatus[i] = false;
 			for (int j = 0; j < NoOfPlayers; j++) {
 				ControllerArray[j]->UpdatePointAtLocation(i, ControllerArray[i]->points);
 			}
@@ -152,31 +217,19 @@ void AArenaGameMode::SomeoneNotChoose()
 	}
 }
 
-void AArenaGameMode::StartRound(int n)
+void AArenaGameMode::StartRound()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%d : round"),n);
-	ChoosingTime = 20;
-	if (NoOfPeopleAlive==2) {
-		Rule3 = true;
-	}
-	if (NoOfPeopleAlive < 5) {
-		Rule1 = true;
-	}
-	if (NoOfPeopleAlive == 3) {
-		Rule2 = true;
-	}
-	else {
-		Rule2 = false;
-	}
+	ChoosingTime = 15;
 	StartTimer();
 }
 
-void AArenaGameMode::StopRound()
+void AArenaGameMode::StopRound(int n, TArray<float> ChooosenArr,float aver)
 {
-	
+	bool DoesSOmeOneDied = false;
 	for(int i=0;i<NoOfPlayers;i++){
 		if (ControllerArray[i]->bIsAlive) {
 			if (ControllerArray[i]->points <= -10) {
+				DoesSOmeOneDied = true;
 				ControllerArray[i]->bIsAlive = false;
 				NoOfPeopleAlive--;
 				ControllerArray[i]->UpdateLooseOrWin(false);
@@ -185,7 +238,36 @@ void AArenaGameMode::StopRound()
 			ControllerArray[i]->ChoosenNumber = -1;
 		}
 	}
-	Round++;
+	
+	
+
+
+	TArray<bool> tempDead;
+	for (int i = 0; i < NoOfPlayers; i++) {
+		tempDead.Add(ControllerArray[i]->bIsAlive);
+	}
+
+	/////////////////
+	TArray<int> RuleToAdd;
+	if (!Rule3 && NoOfPeopleAlive <= 2) {
+		RuleToAdd.Add(3);
+		Rule3 = true;
+	}
+	if (!Rule1 && NoOfPeopleAlive <= 4) {
+		RuleToAdd.Add(1);
+		Rule1 = true;
+	} 
+	if (!Rule2 && NoOfPeopleAlive <= 3) {
+		RuleToAdd.Add(2);
+		Rule2 = true;
+	}
+	/////////////////////////
+
+	for (auto& it : ControllerArray) {
+		it->ShowCalcAverWidget(n,ChooosenArr,PointsArray,aver,WinnerStatus,tempDead,DoesSOmeOneDied,RuleToAdd);
+	}
+
+
 	if (NoOfPeopleAlive <= 1) {
 		UE_LOG(LogTemp, Warning, TEXT("GameFinish"));
 		for (int i = 0; i < NoOfPlayers; i++) {
@@ -195,7 +277,14 @@ void AArenaGameMode::StopRound()
 		}
 		return;
 	}
-	StartRound(Round);
+	
+	float tempTime = 18.0f;
+	if (n == 1) {
+		tempTime = 23.0f;
+	}
+	if (DoesSOmeOneDied) tempTime = tempTime + 4.0f;
+	GetWorldTimerManager().SetTimer(NewTime, this, &AArenaGameMode::ShowAverageBP, tempTime, false);
+	
 }
 
 void AArenaGameMode::StartTimer()
@@ -228,5 +317,9 @@ void AArenaGameMode::SetArenaTime(int countdown)
 }
 
 
-
+void AArenaGameMode::ShowAverageBP()
+{
+	GetWorldTimerManager().ClearTimer(NewTime);
+	StartRound();
+}
 

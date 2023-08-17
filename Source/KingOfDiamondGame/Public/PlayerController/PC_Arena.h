@@ -72,4 +72,20 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_UpdateLooseOrWin(bool b1);
 	void UpdateLooseOrWin(bool b1);
+
+	void CreateStartingRuleWidget();
+
+	UFUNCTION(Client,Reliable)
+	void Client_CreateStartingRuleWidget();
+
+	void SetVisibilityOfMain();
+
+	UFUNCTION(Client, Reliable)
+	void Client_SetVisibilityOfMain();
+
+
+	void ShowCalcAverWidget(int n,const TArray<float>& choosenArr,const TArray<int>& PointsArr,float avera,const TArray<bool>& winnerStat,const TArray<bool>& DeadStatus,bool b,const TArray<int>& RuleToAdd);
+
+	UFUNCTION(Client, Reliable)
+	void Client_ShowCalcAverWidget(int n,const TArray<float>& choosenArr,const TArray<int>& PointsArr,float avera,const TArray<bool>& winnerStat, const TArray<bool>& DeadStatus,bool b, const TArray<int>& RuleToAdd);
 };

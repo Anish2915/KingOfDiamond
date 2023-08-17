@@ -29,4 +29,9 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     class UTextBlock* WinOrLoose;
+
+    UPROPERTY(meta = (BindWidget))
+    class UImage* ImageBlack;
+
+    
 };

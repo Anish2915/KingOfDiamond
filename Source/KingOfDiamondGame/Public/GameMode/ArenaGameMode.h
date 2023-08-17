@@ -22,26 +22,31 @@ public:
 	bool Rule2 = false;
 	bool Rule3 = false;
 
-	int Round = 0;
 	int NoOfPeopleAlive = 0;
 
 	TArray<class APlayerState*> PlayerState;
 	TArray<class APC_Arena*> ControllerArray;
-	TArray<bool> AliveStatus;
+	TArray<bool> WinnerStatus;
 	float NoOfPlayers;
 
-	bool Rule1Check(std::vector<float>& TempArray);
-
-	FTimerHandle TimerHandle;
+	bool Rule1Check(TArray<float> TempArray);
+	TArray<int> PointsArray;
 
 	void SomeoneNotChoose();
-	void StartRound(int n);
-	void StopRound();
+	void StartRound();
+	void StopRound(int n, TArray<float> ChooosenArr,float aver );
 
 	void StartTimer();
 	void StopTimer();
 	void UpdateTimer();
 	void SetArenaTime(int countdown);
 	int ChoosingTime = 30;
+	FTimerHandle TimerHandle;
 	FTimerHandle TimerHandle_UpdateTimer;
+	FTimerHandle StartingTimer;
+	FTimerHandle NewTime;
+	FTimerHandle FinalTime;
+
+	void StartingTimeFunc();
+	void ShowAverageBP();
 };

@@ -38,4 +38,16 @@ public:
 
 	void AddButtons();
 	void AddPointsView(const FText& NameVar);
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UW_StartingRule> SelectStartingRule;
+
+	void AddStartingWidgetArena();
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UW_CalculatingAverage> SelectCalculatingAverage;
+
+	TArray<FText> NameText;
+
+	class UW_CalculatingAverage* CalcAverageWidget;
 };
