@@ -33,5 +33,6 @@ public:
     UPROPERTY(meta = (BindWidget))
     class UImage* ImageBlack;
 
-    
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* ChoosenNumbertext;
 };

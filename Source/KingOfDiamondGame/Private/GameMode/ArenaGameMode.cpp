@@ -51,7 +51,7 @@ void AArenaGameMode::GetInformation()
 
 	}
 
-	GetWorldTimerManager().SetTimer(StartingTimer, this, &AArenaGameMode::StartingTimeFunc, 49.0f, false);
+	GetWorldTimerManager().SetTimer(StartingTimer, this, &AArenaGameMode::StartingTimeFunc, 51.0f, false);
 	
 }
 
@@ -237,6 +237,7 @@ void AArenaGameMode::StopRound(int n, TArray<float> ChooosenArr,float aver)
 			}
 			ControllerArray[i]->bDoesChoose = false;
 			ControllerArray[i]->ChoosenNumber = -1;
+			ControllerArray[i]->DontShowChoosen();
 		}
 	}
 	
@@ -268,19 +269,16 @@ void AArenaGameMode::StopRound(int n, TArray<float> ChooosenArr,float aver)
 		it->ShowCalcAverWidget(n,ChooosenArr,PointsArray,aver,WinnerStatus,tempDead,DoesSOmeOneDied,RuleToAdd);
 	}
 
-	float tempTime = 18.0f;
-	if (n == 1) {
-		tempTime = 23.0f;
-	}
-	if (DoesSOmeOneDied) tempTime = tempTime + 4.0f;
-
-
+	float tempTime = 16.0f;
+	if (n == 1) tempTime = tempTime + 10.0f;
+	if (DoesSOmeOneDied) tempTime = tempTime + 5.0f;
+	if (!RuleToAdd.IsEmpty())  tempTime = tempTime + 4.5f + 8 * RuleToAdd.Num();
 	if (NoOfPeopleAlive <= 1) {
-		GetWorldTimerManager().SetTimer(FinalTime, this, &AArenaGameMode::GameFinsih, tempTime, false);
+		GetWorldTimerManager().SetTimer(FinalTime, this, &AArenaGameMode::GameFinsih, tempTime-3, false);
 		return;
 	}
 
-	GetWorldTimerManager().SetTimer(NewTime, this, &AArenaGameMode::ShowAverageBP, tempTime, false);
+	GetWorldTimerManager().SetTimer(NewTime, this, &AArenaGameMode::ShowAverageBP, tempTime+1, false);
 	
 }
 

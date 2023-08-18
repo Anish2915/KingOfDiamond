@@ -13,7 +13,6 @@ void UW_ButtonCPP::NativeConstruct()
 
 void UW_ButtonCPP::OnClick()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%d"), value);
 
 	APlayerController* OwningPlayerController = GetOwningPlayer();
 
@@ -23,9 +22,6 @@ void UW_ButtonCPP::OnClick()
 			
 			if (PlayerController->bIsAlive && !PlayerController->bDoesChoose) {
 				PlayerController->ChoooseNum(this->value);
-			}
-			else {
-				UE_LOG(LogTemp, Warning, TEXT("You are dead"));
 			}
 		}
 	}

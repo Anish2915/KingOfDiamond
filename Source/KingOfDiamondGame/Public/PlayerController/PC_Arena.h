@@ -88,4 +88,7 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void Client_ShowCalcAverWidget(int n,const TArray<float>& choosenArr,const TArray<int>& PointsArr,float avera,const TArray<bool>& winnerStat, const TArray<bool>& DeadStatus,bool b, const TArray<int>& RuleToAdd);
+
+
+	void DontShowChoosen();
 };

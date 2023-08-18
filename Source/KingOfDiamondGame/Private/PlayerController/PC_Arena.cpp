@@ -31,7 +31,9 @@ void APC_Arena::ChoooseNum(int n)
 	if (HasAuthority()) {
 		ChoosenNumber = n;
 		bDoesChoose = true;
-		UE_LOG(LogTemp, Warning, TEXT("%d"), ChoosenNumber);
+		if (ArenaHUD && ArenaHUD->W_ArenaRef) {
+			ArenaHUD->W_ArenaRef->ChoosenNumbertext->SetText(FText::FromString(FString::Printf(TEXT("%d"), n)));
+		}
 	}
 	else {
 		ServerChangedNum(n);
@@ -40,7 +42,9 @@ void APC_Arena::ChoooseNum(int n)
 
 void APC_Arena::OnRepChooseNum()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%d"),ChoosenNumber);
+	if (ArenaHUD && ArenaHUD->W_ArenaRef) {
+		ArenaHUD->W_ArenaRef->ChoosenNumbertext->SetText(FText::FromString(FString::Printf(TEXT("%d"), ChoosenNumber)));
+	}
 }
 
 
@@ -201,6 +205,13 @@ void APC_Arena::ShowCalcAverWidget(int n, const TArray<float>& choosenArr, const
 	}
 	else {
 		Client_ShowCalcAverWidget(n, choosenArr, PointsArr, avera,winnerStat,DeadStatus,b,RuleToAdd);
+	}
+}
+
+void APC_Arena::DontShowChoosen()
+{
+	if (ArenaHUD && ArenaHUD->W_ArenaRef) {
+		ArenaHUD->W_ArenaRef->ChoosenNumbertext->SetText(FText::FromString(FString::Printf(TEXT("%d"), -1)));
 	}
 }
 
