@@ -9,7 +9,7 @@
 
 void AArenaGameMode::BeginPlay()
 {
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AArenaGameMode::GetInformation, 10.0f, false);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AArenaGameMode::GetInformation, 8.0f, false);
 	
 }
 
@@ -51,7 +51,7 @@ void AArenaGameMode::GetInformation()
 
 	}
 
-	GetWorldTimerManager().SetTimer(StartingTimer, this, &AArenaGameMode::StartingTimeFunc, 47.0f, false);
+	GetWorldTimerManager().SetTimer(StartingTimer, this, &AArenaGameMode::StartingTimeFunc, 49.0f, false);
 	
 }
 

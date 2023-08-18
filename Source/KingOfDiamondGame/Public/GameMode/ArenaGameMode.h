@@ -47,6 +47,7 @@ public:
 	FTimerHandle NewTime;
 	FTimerHandle FinalTime;
 
+	void GameFinsih();
 	void StartingTimeFunc();
 	void ShowAverageBP();
 };
