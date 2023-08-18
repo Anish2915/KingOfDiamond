@@ -220,7 +220,7 @@ void AArenaGameMode::SomeoneNotChoose()
 
 void AArenaGameMode::StartRound()
 {
-	ChoosingTime = 40;
+	ChoosingTime = 20;
 	StartTimer();
 }
 

@@ -40,7 +40,7 @@ public:
 	void StopTimer();
 	void UpdateTimer();
 	void SetArenaTime(int countdown);
-	int ChoosingTime = 30;
+	int ChoosingTime = 20;
 	FTimerHandle TimerHandle;
 	FTimerHandle TimerHandle_UpdateTimer;
 	FTimerHandle StartingTimer;
