@@ -255,7 +255,7 @@ void AArenaGameMode::StopRound(int n, TArray<float> ChooosenArr,float aver)
 		RuleToAdd.Add(3);
 		Rule3 = true;
 	}
-	if (!Rule1 && NoOfPeopleAlive <= 4) {
+	if (!Rule1 && NoOfPeopleAlive <= 5) {
 		RuleToAdd.Add(1);
 		Rule1 = true;
 	} 
